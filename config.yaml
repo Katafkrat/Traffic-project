@@ -1,0 +1,4 @@
+output_folder: D:/Traffic speed project/results
+segment_length_sec: 30
+video_path: D:/Traffic speed project/clip_30_60.mp4
+yolo_model_path: D:/Traffic speed project/runs/detect/traffic_detection/weights/best.pt
