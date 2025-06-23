@@ -1,51 +1,72 @@
-import os
-import cv2
-import numpy as np
-from .yolo_utils import detect_and_save
+from .utils.video_processor import process_video_file
+from .utils.screen_recorder import record_and_process_screen
+from .utils.rtsp_recorder import record_and_process_rtsp
 
 
 class TrafficProcessor:
-    def __init__(self, video_path, output_folder, yolo_model_path, segment_length_sec):
+    def __init__(
+        self,
+        video_path,
+        output_folder,
+        yolo_model_path,
+        segment_length_sec,
+        screen_duration_sec=None,
+        source="file",
+        log_callback=None,
+        stop_callback=None
+    ):
         self.video_path = video_path
         self.output_folder = output_folder
-        os.makedirs(output_folder, exist_ok=True)
-        self.video_file = os.path.basename(video_path)
-        self.model_path = yolo_model_path
+        self.yolo_model_path = yolo_model_path
         self.segment_length_sec = segment_length_sec
-        self.cap = cv2.VideoCapture(video_path)
+        self.screen_duration_sec = screen_duration_sec
+        self.source = source
+        self.log_callback = log_callback
+        self.stop_callback = stop_callback or (lambda: False)
 
-        if not self.cap.isOpened():
-            raise ValueError(f"❌ Не вдалося відкрити відео: {self.video_file}")
-
-        self.fps = int(self.cap.get(cv2.CAP_PROP_FPS))
-        self.total_frames = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        self.frame_width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)) // 2
-        self.frame_height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        self.line_y = self.frame_height // 4
+    def log(self, message):
+        if self.log_callback:
+            self.log_callback(message)
+        else:
+            print(message)
 
     def process(self):
-        duration_sec = self.total_frames // self.fps
-        segments = duration_sec // self.segment_length_sec
-        results_summary = []
-    
-        for segment_idx in range(segments):
-            print(f"🔹 Обробка сегменту {segment_idx + 1}/{segments}")
-            self.cap.set(cv2.CAP_PROP_POS_FRAMES, segment_idx * self.segment_length_sec * self.fps)
-            segment_frame_count = self.segment_length_sec * self.fps
-            result_image = np.zeros((segment_frame_count, self.frame_width, 3), dtype=np.uint8)
-    
-            for i in range(segment_frame_count):
-                ret, frame = self.cap.read()
-                if not ret:
-                    break
-                line_image = frame[self.line_y:self.line_y + 1, :]
-                line_image = cv2.resize(line_image, (self.frame_width, 1))
-                result_image[i:i + 1, :, :] = line_image
-    
-            print(f"✅ Обробка YOLO: сегмент {segment_idx + 1}")
-            class_counts = detect_and_save(self.model_path, result_image, self.output_folder, self.video_file, segment_idx + 1)
-            results_summary.append((segment_idx + 1, class_counts))
-    
-        self.cap.release()
-        return results_summary
+        if self.source == "screen":
+            return self.process_screen()
+        elif self.source == "rtsp":
+            return self.process_rtsp()
+        else:  # "file" or others
+            return self.process_video(self.video_path)
 
+    def process_screen(self):
+        results = record_and_process_screen(
+            output_folder=self.output_folder,
+            duration=self.screen_duration_sec,
+            segment_length_sec=self.segment_length_sec,
+            model_path=self.yolo_model_path,
+            log_callback=self.log,
+            stop_callback=self.stop_callback
+        )
+        return results
+
+    def process_rtsp(self):
+        results = record_and_process_rtsp(
+            rtsp_url=self.video_path,
+            output_folder=self.output_folder,
+            duration=self.screen_duration_sec,
+            segment_length_sec=self.segment_length_sec,
+            model_path=self.yolo_model_path,
+            log_callback=self.log,
+            stop_callback=self.stop_callback
+        )
+        return results
+
+    def process_video(self, video_path):
+        return process_video_file(
+            video_path=video_path,
+            output_folder=self.output_folder,
+            model_path=self.yolo_model_path,
+            segment_length_sec=self.segment_length_sec,
+            log_callback=self.log,
+            stop_callback=self.stop_callback
+        )

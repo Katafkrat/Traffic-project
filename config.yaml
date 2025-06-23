@@ -1,4 +1,10 @@
-output_folder: D:/Traffic speed project/results
+output_folder: D:/Traffic project/results
+rtsp_duration_sec: 0
+rtsp_password: '123456'
+rtsp_url: rtsp://192.168.1.108:554/stream1
+rtsp_username: admin.
+screen_duration_sec: 0
 segment_length_sec: 30
-video_path: D:/Traffic speed project/clip_30_60.mp4
-yolo_model_path: D:/Traffic speed project/runs/detect/traffic_detection/weights/best.pt
+source: rtsp
+video_path: D:/Traffic project/clip_30_60.mp4
+yolo_model_path: D:/Traffic project/runs/detect/traffic_detection/weights/best.pt

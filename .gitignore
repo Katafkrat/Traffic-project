@@ -1,0 +1,100 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# PyInstaller
+# Usually contains build artifacts and executables
+dist/
+*.spec
+
+# Virtual environment
+.venv/
+env/
+venv/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# PyQt5 .ui compiled files
+*.pyc
+*.pyo
+*.qrc.py
+*.ui.py
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+error.log
+
+# Video files / large data
+*.avi
+*.mp4
+*.mkv
+*.mov
+
+# Results
+results/
+runs/
+outputs/
+__results__/
+*.jpg
+*.png
+
+# Checkpoints / Weights
+*.pt
+*.onnx
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Configs
+config.yaml
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
